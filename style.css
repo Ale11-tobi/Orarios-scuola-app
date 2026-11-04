@@ -725,3 +725,4 @@ option { background: #1c1c1e; }
 .logs-actions { display: flex; gap: 8px; margin: 12px 0; }
 .logs-actions .primary-btn { flex: 1; padding: 12px; font-size: 0.9rem; }
 .logs-actions .secondary-btn { font-size: 0.9rem; }
+#share-gate { z-index: 1500; background: rgba(0,0,0,0.85); }

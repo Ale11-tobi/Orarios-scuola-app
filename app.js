@@ -473,15 +473,35 @@ function openLogs(message) {
 }
 
 $('logs-btn').addEventListener('click', () => { modal.classList.add('hidden'); openLogs(); });
-$('share-logs-btn').addEventListener('click', async () => {
+// Condivide il link; restituisce true se la condivisione è stata completata o il link copiato
+async function shareMyLogs() {
     const url = buildShareLink();
     const text = `Accessi di ${userName} all'app Orario`;
-    try {
-        if (navigator.share) { await navigator.share({ title: text, text, url }); return; }
-    } catch (e) { if (e.name === 'AbortError') return; }
-    try { await navigator.clipboard.writeText(url); alert('Link copiato! Mandalo al tuo amico.'); }
-    catch { prompt('Copia questo link e mandalo al tuo amico:', url); }
-});
+    let ok = false;
+    if (navigator.share) {
+        try { await navigator.share({ title: text, text, url }); ok = true; }
+        catch (e) { if (e.name === 'AbortError') return false; }
+    }
+    if (!ok) {
+        try { await navigator.clipboard.writeText(url); alert('Link copiato! Mandalo al tuo amico.'); ok = true; }
+        catch { ok = prompt('Copia questo link e mandalo al tuo amico:', url) !== null; }
+    }
+    if (ok) localStorage.setItem('lastSharedAt', String(Date.now()));
+    return ok;
+}
+$('share-logs-btn').addEventListener('click', shareMyLogs);
+
+// ----- Blocco settimanale: chi non è "Ale" deve condividere i propri accessi ogni 7 giorni -----
+const WEEK = 7 * 24 * 60 * 60 * 1000;
+const isExempt = () => userName.trim().toLowerCase() === 'ale';
+function checkShareGate() {
+    if (!userName || isExempt()) { $('share-gate').classList.add('hidden'); return; }
+    if (!localStorage.getItem('lastSharedAt')) localStorage.setItem('lastSharedAt', String(Date.now())); // primo uso: parte il conteggio
+    const due = Date.now() - parseInt(localStorage.getItem('lastSharedAt')) >= WEEK;
+    $('share-gate').classList.toggle('hidden', !due);
+}
+$('gate-share-btn').addEventListener('click', async () => { if (await shareMyLogs()) checkShareGate(); });
+
 $('import-logs-btn').addEventListener('click', () => {
     const link = prompt('Incolla il link che ti ha mandato il tuo amico:');
     if (!link) return;
@@ -507,12 +527,14 @@ $('welcome-form').addEventListener('submit', e => {
     $('user-name-display').textContent = name;
     $('welcome-modal').classList.add('hidden');
     if (isNew) logAccess();
+    checkShareGate();
 });
 $('change-user-btn').addEventListener('click', () => { modal.classList.add('hidden'); askUserName(true); });
 
 // ---------- Avvio ----------
 $('user-name-display').textContent = userName;
 if (userName) logAccess(); else askUserName(false);
+checkShareGate();
 if (/logs=/.test(location.hash)) {
     const added = importFromHash(location.hash);
     history.replaceState(null, '', location.pathname);
@@ -522,7 +544,7 @@ $('updated-date').textContent = TIMETABLE_UPDATED;
 updateNotifyBtn();
 renderAll();
 setInterval(tick, 1000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { renderAll(); maybeLogReturn(); } });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { renderAll(); maybeLogReturn(); checkShareGate(); } });
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('sw.js').catch(err => console.log('SW error', err));
