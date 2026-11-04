@@ -54,7 +54,7 @@ body {
 
 /* Header */
 #main-header {
-    padding: 24px 20px 16px;
+    padding: calc(16px + env(safe-area-inset-top)) 20px 14px;
     position: sticky;
     top: 0;
     z-index: 10;
@@ -320,8 +320,27 @@ main {
     font-weight: 600;
 }
 
+.lesson-rows {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+}
+
+.lesson-row {
+    display: flex;
+    align-items: center;
+}
+
+.lesson-item.multi .lesson-row + .lesson-row {
+    border-top: 1px dashed var(--border-color);
+    padding-top: 10px;
+}
+
 .lesson-content {
     flex: 1;
+    min-width: 0;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -354,6 +373,8 @@ main {
 }
 
 .lesson-teachers {
+    display: block;
+    margin-top: 2px;
     font-size: 0.8rem;
     color: var(--text-tertiary);
     font-weight: 500;
@@ -375,7 +396,7 @@ main {
 
 /* Settings Modal */
 .modal-overlay {
-    position: absolute;
+    position: fixed;
     top: 0; left: 0; right: 0; bottom: 0;
     background: rgba(0,0,0,0.6);
     backdrop-filter: blur(10px);
@@ -402,6 +423,10 @@ main {
     transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
     border-top: 1px solid var(--border-color);
+    max-width: 440px;
+    max-height: 88vh;
+    overflow-y: auto;
+    padding-bottom: calc(24px + env(safe-area-inset-bottom));
 }
 
 .modal-overlay.hidden .modal-card {
@@ -503,3 +528,200 @@ select:focus {
     width: 0px;
     background: transparent;
 }
+
+/* ---------- v2 ---------- */
+.class-chips {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+    overflow-x: auto;
+}
+.chip {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border-color);
+    color: var(--text-secondary);
+    border-radius: 999px;
+    padding: 7px 14px;
+    font: inherit;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+}
+.chip-label {
+    font-weight: 500;
+    opacity: 0.7;
+    margin-right: 6px;
+}
+.chip.active {
+    background: linear-gradient(135deg, #1d2671, #c33764);
+    color: #fff;
+    border-color: transparent;
+}
+
+.widget-subject.small { font-size: 1.4rem; }
+.widget-room.small { font-size: 1rem; padding: 6px 12px; background: rgba(255,255,255,0.06); }
+.widget-main.compact { margin-bottom: 0; align-items: center; }
+.widget.current.done { background: linear-gradient(135deg, #134e5e 0%, #2f7d55 100%); }
+.widget.current.weekend { background: linear-gradient(135deg, #42275a 0%, #734b6d 100%); }
+.countdown {
+    font-variant-numeric: tabular-nums;
+    font-weight: 700;
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+.countdown.muted {
+    margin-left: auto;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.06);
+    letter-spacing: 0;
+    text-transform: none;
+    font-size: 0.75rem;
+}
+.widget-groups {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: -6px 0 14px;
+    font-size: 0.8rem;
+}
+.widget-groups span {
+    background: rgba(0,0,0,0.25);
+    padding: 3px 10px;
+    border-radius: 999px;
+}
+.pulse {
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: #FF453A;
+    box-shadow: 0 0 0 0 rgba(255,69,58,0.7);
+    animation: pulse 1.6s infinite;
+}
+@keyframes pulse {
+    70% { box-shadow: 0 0 0 8px rgba(255,69,58,0); }
+    100% { box-shadow: 0 0 0 0 rgba(255,69,58,0); }
+}
+
+.day-btn { position: relative; }
+.day-btn.today::after {
+    content: '';
+    position: absolute;
+    bottom: 4px; left: 50%;
+    width: 4px; height: 4px;
+    margin-left: -2px;
+    border-radius: 50%;
+    background: var(--accent-red);
+}
+.day-summary {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    font-weight: 600;
+    margin: -8px 0 14px 4px;
+}
+
+.lesson-item.past { opacity: 0.45; }
+.time-dur {
+    margin-top: 6px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: var(--item-color);
+    background: var(--item-bg);
+    padding: 2px 6px;
+    border-radius: 6px;
+    white-space: nowrap;
+}
+.lesson-room-badge small {
+    display: block;
+    font-size: 0.6rem;
+    font-weight: 600;
+    opacity: 0.8;
+    margin-top: 2px;
+}
+.group-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    background: rgba(255,255,255,0.08);
+    color: var(--text-secondary);
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 6px;
+    vertical-align: middle;
+}
+.empty {
+    text-align: center;
+    color: var(--text-tertiary);
+    padding: 40px 0;
+}
+.footer-note {
+    text-align: center;
+    font-size: 0.75rem;
+    color: var(--text-tertiary);
+}
+.primary-btn.enabled { background: #2f7d55; }
+optgroup { background: #1c1c1e; }
+option { background: #1c1c1e; }
+
+/* ---------- Utente e logs ---------- */
+.user-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.user-name { font-size: 1.1rem; font-weight: 700; }
+.secondary-btn {
+    background: rgba(255,255,255,0.08);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 10px 14px;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.secondary-btn.wide { padding: 14px; }
+.logs-source { margin: 10px 0 6px; }
+.logs-list { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+.log-day {
+    font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;
+    color: var(--text-tertiary); margin: 12px 0 2px;
+}
+.log-item {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+}
+.log-name { font-weight: 700; }
+.log-meta { font-size: 0.75rem; color: var(--text-tertiary); }
+.log-time { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--accent-blue); }
+.modal-overlay.center { align-items: center; padding: 20px; }
+.welcome-card {
+    border-radius: 24px;
+    display: flex; flex-direction: column; gap: 14px; text-align: center;
+}
+.welcome-icon { width: 72px; height: 72px; border-radius: 18px; align-self: center; }
+.welcome-card input {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--border-color);
+    color: #fff;
+    padding: 14px 16px;
+    border-radius: 12px;
+    font: inherit; font-size: 1rem;
+    outline: none;
+}
+.welcome-card input:focus { border-color: var(--accent-blue); }
+
+/* Nomi lunghi su schermi stretti */
+.subject-wrapper > div { min-width: 0; }
+.lesson-subject { overflow-wrap: anywhere; font-size: 1.05rem; }
+.lesson-room-badge { flex-shrink: 0; }
+.lesson-time { min-width: 48px; padding-right: 12px; margin-right: 12px; flex-shrink: 0; }
+.subject-wrapper { gap: 10px; }
+.lesson-item { padding: 14px 12px; }
+.widget-subject { overflow-wrap: anywhere; }
+.logs-actions { display: flex; gap: 8px; margin: 12px 0; }
+.logs-actions .primary-btn { flex: 1; padding: 12px; font-size: 0.9rem; }
+.logs-actions .secondary-btn { font-size: 0.9rem; }
